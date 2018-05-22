@@ -1,0 +1,12 @@
+{
+  "name": "testnewman",
+  "version": "1.0.0",
+  "description": "ProjectNewman",
+    "scripts": {
+    "test": "newman run tests/Dictonaries.postman_collection.json
+  },
+  "author": "Pawel",
+  "dependencies": {
+    "newman": "^3.9.3"
+  }
+}

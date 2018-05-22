@@ -1,0 +1,9 @@
+login:Admin
+password:12345
+base-url:http://pip-w81:90
+clientId:test
+city_name:Krk2
+CountryName:Polska
+modifyCityName:KrkModified
+SchemaLang: {     "type": "object",?"properties":{?       "Polish": {     "type": ["null", "string"]},?        "Foreign1": {     "type": ["null", "string"]},?        "Foreign2": {     "type": ["null", "string"]},?        "Foreign3": {     "type": ["null", "string"]},?        "Foreign4": {     "type": ["null", "string"]},?        "Foreign5": {     "type": ["null", "string"]}?  }?}
+countryName:Polska1524820728561

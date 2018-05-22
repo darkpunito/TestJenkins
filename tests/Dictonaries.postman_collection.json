@@ -1,0 +1,689 @@
+{
+	"info": {
+		"_postman_id": "bc966050-35f6-491e-8835-d8e1a73999ab",
+		"name": "Dictonaries",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"description": "",
+			"item": [
+				{
+					"name": "1.1 Log In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "09e2e0a8-4f45-4cdf-92ea-3dadff132882",
+								"type": "text/javascript",
+								"exec": [
+									"postman.setGlobalVariable(\"commonTests\", () => {",
+									" ",
+									"    // Status code 200",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    //sprawdzenie wydajności",
+									"    pm.test(\"Response time is less value variable responseTimeMs\", function () {",
+									"        var limitTime = parseInt(pm.variables.get(\"responseTimeMs\"));",
+									"        pm.expect(pm.response.responseTime).to.be.below(limitTime); ",
+									"    });",
+									"});",
+									"",
+									"eval(globals.commonTests)();",
+									"",
+									" ",
+									"//Test Schemy json-a",
+									"pm.test('Schema is valid', function() {",
+									"    ",
+									"    var schema = {",
+									"        required:[\"access_token\",\"refresh_token\"],",
+									"      \"properties\":{\"access_token\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"      \"token_type\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"      \"expires_in\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"      \"refresh_token\": {",
+									"          \"type\": \"string\",",
+									"         ",
+									"        }",
+									"      }",
+									"    };",
+									"  var responseToken = JSON.parse(responseBody);",
+									"  pm.expect(tv4.validate(responseToken, schema)).to.be.true;",
+									"",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"//Token jest pusty",
+									"pm.test('Token is not blank', function() {",
+									" ",
+									"   pm.expect(jsonData.access_token !== null && jsonData.access_token !==\"\").to.be.true;",
+									"});",
+									"",
+									" ",
+									"postman.setEnvironmentVariable(\"access-token\", jsonData.access_token);",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ff2ab2db-7e41-42ea-8626-63f0d85f2bec",
+								"type": "text/javascript",
+								"exec": [
+									"//pm.environment.set(\"countryName\", \"Polska\"+Date.now());"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "Bearer",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "grant_type=password&username={{login}}&password={{password}}&client_id={{clientId}}"
+						},
+						"url": {
+							"raw": "{{base-url}}/token",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"token"
+							]
+						},
+						"description": "Sprawdzenie statusu 200\n\nSprawdzenie wydajności ms  poniżej: parametr responseTimeMs\n\nSprawdzenie Schemat JSON\n\nSprawdzenie czy access_token nie jest pusty\n\nUstawienie w zmiennych globalnych Tokena"
+					},
+					"response": [
+						{
+							"id": "48ef0ae7-6377-4f6d-96c4-3e48471cb5c9",
+							"name": "zalogowanie do API",
+							"originalRequest": {
+								"auth": {
+									"type": "oauth2",
+									"oauth2": [
+										{
+											"key": "accessToken",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "addTokenTo",
+											"value": "header",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "grant_type=password&username={{login}}&password={{password}}&client_id={{clientId}}"
+								},
+								"url": {
+									"raw": "{{base-url}}/token",
+									"host": [
+										"{{base-url}}"
+									],
+									"path": [
+										"token"
+									]
+								},
+								"description": "Sprawdzenie statusu 200\n\nSprawdzenie wydajności ms  poniżej: parametr responseTimeMs\n\nSprawdzenie Schemat JSON\n\nSprawdzenie czy access_token nie jest pusty\n\nUstawienie w zmiennych globalnych Tokena"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DictCities",
+			"description": "",
+			"item": [
+				{
+					"name": "Adds New City",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "23b75807-fd9a-45b1-b0e8-fcba7e60db66",
+								"type": "text/javascript",
+								"exec": [
+									"pm.sendRequest(",
+									"    {",
+									"        url: pm.environment.get(\"base-url\") +'/dictcountries',",
+									"        method: 'GET',",
+									"        header: {",
+									"            \"Authorization\": \"Bearer \"+ pm.environment.get(\"access-token\"),",
+									"            \"Content-type\" : \"application/json\"",
+									"        },",
+									"        body: {",
+									"            mode:'raw',",
+									"            raw : JSON.stringify()",
+									"        }",
+									"        ",
+									"    }, function (err, res){",
+									"        for (var i = 0 ; i < res.json().length ; i++)",
+									"        {",
+									"            ",
+									"            if (res.json()[i].PolishName == pm.environment.get(\"CountryName\"))",
+									"            {",
+									"                pm.globals.set(\"countryId\", res.json()[i].Id);",
+									"                console.log(res.json()[i].Id);",
+									"                console.log(res.json()[i].PolishName);",
+									"                break;",
+									"            }",
+									"        }",
+									"        ",
+									"        ",
+									"    }",
+									"    )",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff3dead9-015f-49c5-95dd-c01ad75eccce",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"pm.globals.set(\"cityId\", response.Id)",
+									"eval(globals.commonTests)();",
+									"pm.test(\"Schema is Valid\", function(){",
+									"    tv4.addSchema(\"SchemaForLanguageVersion\", JSON.parse(pm.environment.get(\"SchemaLang\")));",
+									"    var expectedschema = {",
+									"",
+									"  ",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"IsFromTERYT\": { \"type\": [\"null\", \"byte\"]    },",
+									"    \"Region\": {  \"type\": \"number\",    },",
+									"    \"InhabitantsNumber\": {   \"type\": \"number\"    },",
+									"    \"Distance\": {  \"type\": \"number\",    },",
+									"    \"Locative\": {      \"type\": [\"null\", \"string\"]    },",
+									"    \"TypeOfRegion\": {      \"type\": \"string\",    },",
+									"    \"Name\": {  \"$ref\" : \"SchemaForLanguageVersion\"      },",
+									"    \"DistrictID\": {      \"type\": \"number\"    },",
+									"    \"PoviatID\": {      \"type\": \"number\"    },",
+									"    \"VoivodeshipID\": {      \"type\": \"number\"},",
+									"    \"CountryID\": {      \"type\": \"number\"    },",
+									"    \"DistrictName\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"PoviatName\": {      \"type\": \"string\"    },",
+									"    \"VoivodeshipName\": {      \"type\": \"string\"    },",
+									"    \"CountryName\": {      \"type\": \"string\"    },",
+									"    \"PolishName\": {      \"type\": \"string\"    },",
+									"    \"Abbreviation\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"Comments\": {    \"type\": [\"null\", \"string\"]    },",
+									"    \"OrderNumber\": {      \"type\": \"number\"    },",
+									"    \"Active\": {      \"type\": \"boolean\"    },",
+									"    \"Id\": {      \"type\": \"number\"    },",
+									"    \"CreateFirma\": {      \"type\": \"string\"    },",
+									"    \"Created\": {      \"type\": \"string\"    },",
+									"    \"UserCreated\": {      \"type\": \"string\"    },",
+									"    \"Updated\": {      \"type\": \"string\"    },",
+									"    \"UserUpdated\": {      \"type\": \"string\"    }",
+									"  }",
+									"};",
+									"  var testpassed = tv4.validate(response, expectedschema);",
+									"  if (!testpassed)",
+									"  {",
+									"     console.log(tv4.validateMultiple(response,expectedschema));",
+									"  }",
+									"  pm.expect(testpassed).to.be.true;",
+									"",
+									"  //pm.expect(tv4.validate(response, expectedschema)).to.be.true;",
+									"  //console.log(tv4.validateMultiple(response,expectedschema));  ",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Name\": {\n                \"Polish\": \"{{city_name}}\"\n             },\n    \"Abbreviation\": \"aG\",\n    \n    \"CountryId\": \"{{countryId}}\"\n   \n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities"
+							]
+						},
+						"description": "Adds new City based on environment variable CountryName (PolishName of DictCountries)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Added city",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "adfa6cb2-45fa-4e06-8748-050039dc37c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "fa341fdd-3b02-4b6d-b72a-0421b6a30681",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"eval(globals.commonTests)();",
+									"pm.test(\"Country Id is correct\", function(){",
+									"    //pm.expect(response.CountryID, pm.globals.get(\"countryId\")).to.be.true;",
+									"    pm.expect(response.CountryID).to.eql(pm.globals.get(\"countryId\"));",
+									"});",
+									"pm.test(\"Schema is Valid\", function(){",
+									"    tv4.addSchema(\"SchemaForLanguageVersion\", JSON.parse(pm.environment.get(\"SchemaLang\")));",
+									"    var expectedschema = {",
+									"",
+									"  ",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"IsFromTERYT\": { \"type\": [\"null\", \"number\"]    },",
+									"    \"Region\": {  \"type\": \"number\",    },",
+									"    \"InhabitantsNumber\": {   \"type\": \"number\"    },",
+									"    \"Distance\": {  \"type\": \"number\",    },",
+									"    \"Locative\": {      \"type\": [\"null\", \"string\"]    },",
+									"    \"TypeOfRegion\": {      \"type\": \"string\",    },",
+									"    \"Name\": {    \"$ref\": \"SchemaForLanguageVersion\"},",
+									"    \"DistrictID\": {      \"type\": \"number\"    },",
+									"    \"PoviatID\": {      \"type\": \"number\"    },",
+									"    \"VoivodeshipID\": {      \"type\": \"number\"},",
+									"    \"CountryID\": {      \"type\": \"number\"    },",
+									"    \"DistrictName\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"PoviatName\": {      \"type\": \"string\"    },",
+									"    \"VoivodeshipName\": {      \"type\": \"string\"    },",
+									"    \"CountryName\": {      \"type\": \"string\"    },",
+									"    \"PolishName\": {      \"type\": \"string\"    },",
+									"    \"Abbreviation\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"Comments\": {    \"type\": [\"null\", \"string\"]    },",
+									"    \"OrderNumber\": {      \"type\": \"number\"    },",
+									"    \"Active\": {      \"type\": \"boolean\"    },",
+									"    \"Id\": {      \"type\": \"number\"    },",
+									"    \"CreateFirma\": {      \"type\": \"string\"    },",
+									"    \"Created\": {      \"type\": \"string\"    },",
+									"    \"UserCreated\": {      \"type\": \"string\"    },",
+									"    \"Updated\": {      \"type\": \"string\"    },",
+									"    \"UserUpdated\": {      \"type\": \"string\"    }",
+									"  }",
+									"};",
+									"  var testpassed = tv4.validate(response, expectedschema);",
+									"  if (!testpassed)",
+									"  {",
+									"     console.log(tv4.validateMultiple(response,expectedschema));",
+									"  }",
+									"  pm.expect(testpassed).to.be.true;",
+									"  ",
+									"})",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Name\": {\n                \"Polish\": \"{{city_name}}\"\n             },\n    \"Abbreviation\": \"addedCity\",\n    \"Active\": true,\n    \"CountryId\": \"{{CountryId}}\"\n   \n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify Added City Name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "15ba9361-a212-46ac-82c9-fdb2acda676b",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1c546db3-0cc4-4824-93ab-c85a1a1bb387",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.commonTests)();"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Name\": {\n                \"Polish\": \"{{modifyCityName}}\"\n             },\n    \"CountryID\": \"{{countryId}}\",\n    \"Id\": \"{{cityId}}\",\n    \"Active\" : \"true\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities/{{cityId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities",
+								"{{cityId}}"
+							]
+						},
+						"description": "Adds new City based on environment variable CountryName (PolishName of DictCountries)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Modified city",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "adfa6cb2-45fa-4e06-8748-050039dc37c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e97390d9-10b3-475f-b1b9-f831d148be01",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"eval(globals.commonTests)();",
+									"pm.test(\"Country Id is correct\", function(){",
+									"    //pm.expect(response.CountryID, pm.globals.get(\"countryId\")).to.be.true;",
+									"    pm.expect(response.CountryID).to.eql(pm.globals.get(\"countryId\"));",
+									"});",
+									"pm.test(\"City Name has been modified\", function(){",
+									"    console.log(response.PolishName);",
+									"    pm.expect(response.PolishName).to.eql(pm.environment.get(\"modifyCityName\"));",
+									"})                                        ",
+									"pm.test(\"Schema is Valid\", function(){",
+									"    tv4.addSchema(\"SchemaForLanguageVersion\", JSON.parse(pm.environment.get(\"SchemaLang\")));",
+									"    var expectedschema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"IsFromTERYT\": { \"type\": [\"null\", \"number\"]    },",
+									"    \"Region\": {  \"type\": \"number\",    },",
+									"    \"InhabitantsNumber\": {   \"type\": \"number\"    },",
+									"    \"Distance\": {  \"type\": \"number\",    },",
+									"    \"Locative\": {      \"type\": [\"null\", \"string\"]    },",
+									"    \"TypeOfRegion\": {      \"type\": \"string\",    },",
+									"    \"Name\": {  \"$ref\": \"SchemaForLanguageVersion\"      },",
+									"    \"DistrictID\": {      \"type\": \"number\"    },",
+									"    \"PoviatID\": {      \"type\": \"number\"    },",
+									"    \"VoivodeshipID\": {      \"type\": \"number\"},",
+									"    \"CountryID\": {      \"type\": \"number\"    },",
+									"    \"DistrictName\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"PoviatName\": {      \"type\": \"string\"    },",
+									"    \"VoivodeshipName\": {      \"type\": \"string\"    },",
+									"    \"CountryName\": {      \"type\": \"string\"    },",
+									"    \"PolishName\": {      \"type\": \"string\"    },",
+									"    \"Abbreviation\": {      \"type\": [\"null\",\"string\"]    },",
+									"    \"Comments\": {    \"type\": [\"null\", \"string\"]    },",
+									"    \"OrderNumber\": {      \"type\": \"number\"    },",
+									"    \"Active\": {      \"type\": \"boolean\"    },",
+									"    \"Id\": {      \"type\": \"number\"    },",
+									"    \"CreateFirma\": {      \"type\": \"string\"    },",
+									"    \"Created\": {      \"type\": \"string\"    },",
+									"    \"UserCreated\": {      \"type\": \"string\"    },",
+									"    \"Updated\": {      \"type\": \"string\"    },",
+									"    \"UserUpdated\": {      \"type\": \"string\"    }",
+									"  }",
+									"};",
+									"  var testpassed = tv4.validate(response, expectedschema);",
+									"  if (!testpassed)",
+									"  {",
+									"     console.log(tv4.validateMultiple(response,expectedschema));",
+									"  }",
+									"  pm.expect(testpassed).to.be.true;",
+									"  ",
+									"})",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Name\": {\n                \"Polish\": \"{{city_name}}\"\n             },\n    \"Abbreviation\": \"addedCity\",\n    \"Active\": true,\n    \"CountryId\": \"{{CountryId}}\"\n   \n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities/{{cityId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities",
+								"{{cityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Added City",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "adfa6cb2-45fa-4e06-8748-050039dc37c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d475a4b-b106-42bb-af54-16f730043f92",
+								"type": "text/javascript",
+								"exec": [
+									"pm.globals.set(\"deletedCityId\", pm.globals.get(\"cityId\"))",
+									"pm.globals.unset(\"cityId\");",
+									"pm.globals.unset(\"countryId\");",
+									"",
+									"eval(globals.commonTests)();"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities/{{cityId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities",
+								"{{cityId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deleted city",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "adfa6cb2-45fa-4e06-8748-050039dc37c5",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "21ebf7d6-dd47-4a7a-8cd5-c3b7a8f042d6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"City has been deleted - status code is 404\", function(){",
+									"    pm.response.to.have.status(404);",
+									"})",
+									"",
+									"pm.globals.unset(\"deletedCityId\");",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access-token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"Name\": {\n                \"Polish\": \"{{city_name}}\"\n             },\n    \"Abbreviation\": \"addedCity\",\n    \"Active\": true,\n    \"CountryId\": \"{{CountryId}}\"\n   \n}"
+						},
+						"url": {
+							"raw": "{{base-url}}/dictcities/{{deletedCityId}}",
+							"host": [
+								"{{base-url}}"
+							],
+							"path": [
+								"dictcities",
+								"{{deletedCityId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
